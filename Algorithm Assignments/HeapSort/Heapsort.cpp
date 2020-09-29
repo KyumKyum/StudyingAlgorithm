@@ -7,10 +7,12 @@ int N,K = 0;
 
 void maxHeapify(int*,int);
 void extractMax(int*, int*, int);
+void percolateDown(int*,int,int);
 
 int main(void){
 	int i = 0;
 	int length = 0;
+	int startIndex = 0;
 	int *heap = NULL;
 	int *result = NULL;
 
@@ -22,17 +24,24 @@ int main(void){
 		scanf("%d",&heap[i]);
 	}
 
-	for(i = 0; i < N; i++){//Sorting
-		length = N - i;
+	length = N;
+
+	for(i = 0; i < K; i++){//Sorting
+
 		//printf("Current Length: %d\n",length);
 		maxHeapify(heap,length);
 		extractMax(heap,result,length);
+		percolateDown(heap,0, --length);
 	}
 
-	for(i = 0; i < N; i++){
+	for(i = 0; i < K; i++){
 		printf("%d ", result[i]);
-		if(i == K - 1)
-			printf("\n");
+	}
+
+	printf("\n");
+
+	for(i = 0; i < N-K; i++){
+		printf("%d ", heap[i]);
 	}
 
 	return 0;
@@ -43,26 +52,36 @@ void maxHeapify(int* heap, int len){
 	int i = 0;
 
 	for(i = mid; i >= 0; i--){
-		int left = heap[2*(i + 1) - 1];
-		int right = -1;
-		
-		if(2*(i + 1) + 1 <= len) //if current node have right child
-			right = heap[2*(i + 1)];
+		percolateDown(heap,i,len);
+	}
+}
+
+void percolateDown(int*heap, int i, int len){
+	int left =  0; 
+	int right = 0;
+	
+	if(2*(i+1) <= len)
+		left = heap[2*(i + 1) - 1];
+
+	if(2*(i + 1) + 1 <= len) //if current node have right child
+		right = heap[2*(i + 1)];
 
 		//printf("CurNode: %d, Left: %d, Right: %d\n",heap[i],left,right);
 
-		if(heap[i] < left || heap[i] < right){
-			if(left > right){
-				//printf("Bigger Left!\n");
-				int temp = heap[2*(i+1) - 1];
-				heap[2*(i+1) - 1] = heap[i];
-				heap[i] = temp;
-			}else{
-				//printf("Bigger Right!\n");
-				int temp = heap[2*(i+1)];
-				heap[2*(i+1)] = heap[i];
-				heap[i] = temp;
-			}
+	if(heap[i] < left || heap[i] < right){
+		if(left > right){
+			//printf("Bigger Left!\n");
+			int temp = heap[2*(i+1) - 1];
+			heap[2*(i+1) - 1] = heap[i];
+			heap[i] = temp;
+			percolateDown(heap,2*(i+1)-1,len);
+
+		}else{
+			//printf("Bigger Right!\n");
+			int temp = heap[2*(i+1)];
+			heap[2*(i+1)] = heap[i];
+			heap[i] = temp;
+			percolateDown(heap,2*(i+1),len);
 		}
 	}
 }
@@ -77,3 +96,4 @@ void extractMax(int* heap, int* result, int len){
 	heap[len-1] = heap[0];
 	heap[0] = temp;
 }
+

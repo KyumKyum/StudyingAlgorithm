@@ -3,9 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void maxHeapify(int*, int);
 void extractMax(int*, int*, int, int);
 void percolateDown(int*,int,int);
+void percolateUp(int*,int,int);
+void restructure(int*,int,int);
 void substituteKey(int*,int,int);
 
 int first = 0;
@@ -17,9 +18,9 @@ int extractedSize = 0;
 int main(void){
 	int i = 0;
 
-	int heap[100000] = { 0 };
-	int extracted[100000] = { 0 };
-	int priorityQueue[100000] = { 0 };
+	int heap[100001] = { 0 };
+	int extracted[100001] = { 0 };
+	int priorityQueue[100001] = { 0 };
 
 	while(1){
 
@@ -40,7 +41,7 @@ int main(void){
 			case 1:
 				//printf("Heapsize: %d\n",heapSize);
 				heap[++heapSize-1] = second;
-				maxHeapify(heap,heapSize);
+				percolateUp(heap,heapSize-1,heapSize);
 				break;
 
 			case 2:
@@ -50,7 +51,7 @@ int main(void){
 
 			case 3:
 				substituteKey(heap,second,third);
-				maxHeapify(heap,heapSize);
+				restructure(heap,second-1,heapSize);
 				break;
 		}
 	}
@@ -68,20 +69,11 @@ int main(void){
 	return 0;
 }
 
-void maxHeapify(int* heap, int len){
-	int mid = (int)(len/2) - 1;
-	if(mid < 0)
-		mid = 0;
-
-	int i = 0;
-
-	for(i = mid; i >= 0; i--){
-		percolateDown(heap,i,len);
-	}
-}
-
 void percolateDown(int*heap, int i, int len){
 	
+	if(2*(i+1)-1 > len)
+		return;
+
 	int left = heap[2*(i + 1) - 1];
 	int right = heap[2*(i + 1)];
 
@@ -94,7 +86,6 @@ void percolateDown(int*heap, int i, int len){
 			heap[2*(i+1) - 1] = heap[i];
 			heap[i] = temp;
 			percolateDown(heap,2*(i+1)-1,len);
-
 		}else{
 			//printf("Bigger Right!\n");
 			int temp = heap[2*(i+1)];
@@ -102,6 +93,35 @@ void percolateDown(int*heap, int i, int len){
 			heap[i] = temp;
 			percolateDown(heap,2*(i+1),len);
 		}
+	}
+}
+
+void percolateUp(int*heap, int i, int len){
+
+	if(i > 0){
+		int target = (int)((i-1)/2);
+		int parent = heap[target];
+		if(heap[i] > parent){
+			int temp = heap[target];
+			heap[target] = heap[i];
+			heap[i] = temp;
+
+			percolateUp(heap,target,len);
+		}
+	}
+}
+
+void restructure(int*heap,int i, int len){
+	int left = heap[2*(i+1) - 1];
+	int right = heap[2*(i+1)];
+	int parent = 0;
+
+	if(heap[i] < left || heap[i] < right){
+		percolateDown(heap,i,len);
+	}else if(i > 0){
+		parent = heap[(int)((i-1)/2)];
+		if(heap[i] > parent)
+			percolateUp(heap,i,len);
 	}
 }
 

@@ -11,22 +11,14 @@ typedef struct Heap{
 	struct Heap* rightChild;
 }HEAP;
 
-typedef struct node{
-	char* str;
-	int number;
-	int reduced;
-}NODE;
-
 HEAP* extractMin();
 void percolateDown(int);
 void percolateUp(int);
 void calculate(HEAP*, int);
 
 HEAP heap[30000] = {{{'\0'},-1,NULL,NULL}};
-NODE RESULT[30000] = { {NULL,0,0} };
 
 int N = 0;
-int M = 0;
 int SIZE = 0;
 int TOTAL = 0;
 int REDUCED = 0;
@@ -115,11 +107,6 @@ int main(void){
 
 	printf("%d\n",3*TOTAL);
 
-	for(i = 0; i < M; i++){
-		//printf("ELEMENT %s, NUM = %d, HUFFCODE = %d\n",RESULT[i].str, RESULT[i].number,RESULT[i].reduced);
-		REDUCED += (RESULT[i].number * RESULT[i].reduced);
-	}
-
 	printf("%d\n",REDUCED);
 
 	return 0;
@@ -198,9 +185,6 @@ void calculate(HEAP* node, int code){
 	}else{
 		//printf("\nLEAF IN LEVEL %d\n",code + 1);
 		//printf("CurNode: %s, %d\n",node->str, node->number);
-		RESULT[M].str = node->str;
-		RESULT[M].number = node->number;
-		RESULT[M].reduced = code;
-		M++;
+		REDUCED += ((node->number) * code);
 	}
 }
